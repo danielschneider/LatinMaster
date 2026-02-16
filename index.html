@@ -1138,29 +1138,34 @@
         }
 
         function toggleSelection(type, value) {
+            // Toggle the selection: if already selected, deselect; otherwise select
             mode1State.selected[type] = mode1State.selected[type] === value ? null : value;
             
+            // Update button classes based on current state
             document.querySelectorAll(`.toggle-btn`).forEach(btn => {
                 const parentGroup = btn.closest('.toggle-group');
-                if (parentGroup && parentGroup.querySelector(`.toggle-label`).textContent.toLowerCase() === type.toLowerCase() || 
-                    (type === 'verb' && parentGroup && parentGroup.querySelector(`.toggle-label`).textContent === 'Verb')) {
-                    btn.classList.remove('selected');
-                }
-            });
-
-            // Reselect buttons
-            document.querySelectorAll(`.toggle-btn`).forEach(btn => {
-                const parent = btn.closest('.toggle-group');
-                const label = parent?.querySelector('.toggle-label')?.textContent?.toLowerCase() || '';
+                const labelElement = parentGroup?.querySelector('.toggle-label');
+                const labelText = labelElement?.textContent || '';
                 
-                if (type === 'tense' && label === 'tense' && btn.textContent.toLowerCase().replace(' ', '') === value) {
-                    btn.classList.toggle('selected');
-                } else if (type === 'person' && label === 'person' && btn.textContent.match(/\d/)?.[0] === value) {
-                    btn.classList.toggle('selected');
-                } else if (type === 'number' && label === 'number' && ((value === 'sg' && btn.textContent === 'Singular') || (value === 'pl' && btn.textContent === 'Plural'))) {
-                    btn.classList.toggle('selected');
-                } else if (type === 'verb' && label === 'verb' && btn.textContent === value) {
-                    btn.classList.toggle('selected');
+                // Determine which group this button belongs to
+                let buttonType = null;
+                if (labelText === 'Zeit') buttonType = 'tense';
+                else if (labelText === 'Person') buttonType = 'person';
+                else if (labelText === 'Numerus') buttonType = 'number';
+                
+                // If this button is in the same group as the one being toggled
+                if (buttonType === type) {
+                    // Deselect all buttons in this group first
+                    btn.classList.remove('selected');
+                    
+                    // Then select only the currently active button for this group
+                    if (type === 'tense' && mode1State.selected.tense === value && btn.textContent.toLowerCase().replace(' ', '') === value) {
+                        btn.classList.add('selected');
+                    } else if (type === 'person' && mode1State.selected.person === value && btn.textContent.match(/\d/)?.[0] === value) {
+                        btn.classList.add('selected');
+                    } else if (type === 'number' && mode1State.selected.number === value && ((value === 'sg' && btn.textContent === 'Singular') || (value === 'pl' && btn.textContent === 'Plural'))) {
+                        btn.classList.add('selected');
+                    }
                 }
             });
         }
