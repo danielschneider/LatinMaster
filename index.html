@@ -473,6 +473,13 @@
                             <button class="toggle-btn" onclick="toggleSelection('number', 'pl')">Plural</button>
                         </div>
                     </div>
+
+                    <div class="toggle-group">
+                        <div class="toggle-label">Modus / Stimme</div>
+                        <div class="toggle-options">
+                            <button class="toggle-btn selected" onclick="toggleSelection('mood', 'ind-act')">Indikativ Aktiv</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="buttons">
@@ -493,10 +500,11 @@
                         <div><span style="color: #888;">Zeit:</span> <span style="color: #fff; font-weight: 600;" id="mode2-tense">Präsens</span></div>
                         <div><span style="color: #888;">Person:</span> <span style="color: #fff; font-weight: 600;" id="mode2-person">1. Pers.</span></div>
                         <div><span style="color: #888;">Numerus:</span> <span style="color: #fff; font-weight: 600;" id="mode2-number">Singular</span></div>
+                        <div><span style="color: #888;">Modus / Stimme:</span> <span style="color: #fff; font-weight: 600;" id="mode2-mood">Indikativ Aktiv</span></div>
                     </div>
                 </div>
                 
-                <input type="text" class="input-field" id="mode2-input" placeholder="Form eingeben (Makronen optional)..." onkeypress="handleEnter(event)" autocomplete="off" autofocus>
+                <input type="text" class="input-field" id="mode2-input" placeholder="Form eingeben (Makron optional)..." onkeypress="handleEnter(event)" autocomplete="off" autofocus>
 
                 <div class="buttons">
                     <button class="ok-btn" onclick="checkMode2()">Prüfen</button>
@@ -1188,7 +1196,7 @@
         let mode1State = {
             verb: 'amare',
             form: null,
-            selected: { tense: null, person: null, number: null }
+            selected: { tense: null, person: null, number: null, mood: 'ind-act' }
         };
         
         // Score tracking
@@ -1242,6 +1250,11 @@
         }
 
         function toggleSelection(type, value) {
+            // Don't toggle mood - it's always Indikativ Aktiv
+            if (type === 'mood') {
+                return;
+            }
+            
             // Toggle the selection: if already selected, deselect; otherwise select
             mode1State.selected[type] = mode1State.selected[type] === value ? null : value;
             
@@ -1256,6 +1269,7 @@
                 if (labelText === 'Zeit') buttonType = 'tense';
                 else if (labelText === 'Person') buttonType = 'person';
                 else if (labelText === 'Numerus') buttonType = 'number';
+                else if (labelText === 'Modus / Stimme') buttonType = 'mood';
                 
                 // If this button is in the same group as the one being toggled
                 if (buttonType === type) {
@@ -1274,11 +1288,17 @@
                     } else if (type === 'number') {
                         // Direct text comparison for singular/plural
                         matches = ((value === 'sg' && btn.textContent === 'Singular') || (value === 'pl' && btn.textContent === 'Plural')) && mode1State.selected.number === value;
+                    } else if (type === 'mood') {
+                        // Mood is always selected
+                        matches = btn.textContent === 'Indikativ Aktiv';
                     }
                     
                     if (matches) {
                         btn.classList.add('selected');
                     }
+                } else if (buttonType === 'mood') {
+                    // Always keep mood button selected
+                    btn.classList.add('selected');
                 }
             });
         }
@@ -1306,9 +1326,15 @@
 
         function nextMode1() {
             mode1State.form = getRandomForm();
-            mode1State.selected = { tense: null, person: null, number: null, verb: null };
+            mode1State.selected = { tense: null, person: null, number: null, mood: 'ind-act' };
             document.getElementById('mode1-question').textContent = mode1State.form.form;
             document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('selected'));
+            // Keep the mood button selected
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                if (btn.textContent === 'Indikativ Aktiv') {
+                    btn.classList.add('selected');
+                }
+            });
             document.getElementById('mode1-feedback').classList.add('hidden');
             checkInProgress = false;
             document.querySelector('.mode-1 .ok-btn').disabled = false;
@@ -1427,7 +1453,7 @@
                 scoreState.incorrect++;
                 feedback.textContent = `✗ Falsch. Die richtige Form ist: ${mode2State.form.form}`;
                 feedback.className = 'feedback incorrect';
-                hint.textContent = `Tipp: Das Infinitiv ist ${mode2State.form.verb}. Die Form, die du suchst, ist: ${mode2State.form.form} (Makronen sind optional)`;
+                hint.textContent = `Tipp: Das Infinitiv ist ${mode2State.form.verb}. Die Form, die du suchst, ist: ${mode2State.form.form} (Makron optional)`;
                 hint.classList.remove('hidden');
                 mode2LastError = true;
                 updateScoreDisplay();
