@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Latin Master</title>
+    <title>Konjugationsquäler</title>
     <style>
         * {
             margin: 0;
@@ -487,7 +487,7 @@
                 </div>
 
                 <div class="buttons">
-                    <button class="ok-btn" onclick="checkMode1()">Prüfen</button>
+                    <button class="ok-btn" id="mode1-btn" onclick="checkMode1()">Prüfen</button>
                 </div>
 
                 <div class="feedback hidden" id="mode1-feedback"></div>
@@ -511,7 +511,7 @@
                 <input type="text" class="input-field" id="mode2-input" placeholder="Form eingeben (Makron optional)..." onkeypress="handleEnter(event)" autocomplete="off" autofocus>
 
                 <div class="buttons">
-                    <button class="ok-btn" onclick="checkMode2()">Prüfen</button>
+                    <button class="ok-btn" id="mode2-btn" onclick="checkMode2()">Prüfen</button>
                 </div>
 
                 <div class="feedback hidden" id="mode2-feedback"></div>
@@ -1342,6 +1342,7 @@
             document.getElementById('mode1-feedback').classList.add('hidden');
             checkInProgress = false;
             document.querySelector('.mode-1 .ok-btn').disabled = false;
+            document.getElementById('mode1-btn').textContent = 'Prüfen';
         }
 
         function checkMode1() {
@@ -1389,6 +1390,7 @@
                 feedback.classList.remove('hidden');
                 checkInProgress = false;
                 document.querySelector('.mode-1 .ok-btn').disabled = false;
+                document.getElementById('mode1-btn').textContent = 'Weiter';
                 
                 // Don't auto-advance on wrong answer - user needs to click OK again
             }
@@ -1409,6 +1411,7 @@
             document.getElementById('mode2-input').focus();
             checkInProgress = false;
             document.querySelector('.mode-2 .ok-btn').disabled = false;
+            document.getElementById('mode2-btn').textContent = 'Prüfen';
         }
 
         function checkMode2() {
@@ -1464,6 +1467,7 @@
                 feedback.classList.remove('hidden');
                 checkInProgress = false;
                 document.querySelector('.mode-2 .ok-btn').disabled = false;
+                document.getElementById('mode2-btn').textContent = 'Weiter';
                 
                 // Clear input and focus for retry on wrong answer
                 input.value = '';
